@@ -1,6 +1,4 @@
 import pymysql
-import time
-from functools import wraps
 
 conn = None
 
@@ -185,6 +183,71 @@ def del_record(conn,delsql,tb,params=None):
     cursor.execute("SET FOREIGN_KEY_CHECKS = 1;") #打开外键检查
     conn.close  
 
+# dcl 数据操作权限语句
+def add_user(conn,params): #新增用户
+    if conn == None:
+        conn = pymysql.connect(host='127.0.0.1', port=3306,
+                        user='root', password='root',
+                        database='school', charset='utf8mb4')
+    cursor = conn.cursor()
+    res = cursor.execute("CREATE USER %s@%s IDENTIFIED BY %s;",(params[0],params[1],params[2]))
+    print(res)
+    conn.commit()  
+    conn.close 
+
+def del_user(conn,params): #删除用户
+    if conn == None:
+        conn = pymysql.connect(host='127.0.0.1', port=3306,
+                        user='root', password='root',
+                        database='school', charset='utf8mb4')
+    cursor = conn.cursor()
+    res = cursor.execute("DROP USER IF EXISTS %s@%s;",(params[0],params[1]))
+    print(res)
+    conn.commit()  
+    conn.close 
+
+# 授予权限
+def grant_privileges(conn,params): 
+    if conn == None:
+        conn = pymysql.connect(host='127.0.0.1', port=3306,
+                        user='root', password='root',
+                        database='school', charset='utf8mb4')
+    cursor = conn.cursor()
+    # res = cursor.execute("GRANT SELECT ON school.tb_college TO %s@%s;",(params[0],params[1]))
+    res = cursor.execute("GRANT SELECT ON school.tb_college TO %s@%s;",params)
+    print(res)
+    conn.commit()  
+    conn.close 
+
+#查看数据库的所有用户
+def get_all_user(conn):
+    if conn == None:
+        conn = pymysql.connect(host='127.0.0.1', port=3306,
+                        user='root', password='root',
+                        database='mysql', charset='utf8mb4') # 查看用户的时候，数据库名称必须是mysql
+    cursor = conn.cursor()
+    res = cursor.execute("SELECT User, Host FROM user;")
+    print(res)  # 当前有4个用户
+    for row in cursor.fetchall():
+        print(row)
+    conn.close 
+# 我们也可以让 wangdachui 对指定 数据库的所有对象都具有查询权限，代码如下所示。
+def grant_privileges2(conn,params):
+    if conn == None:
+        conn = pymysql.connect(host='127.0.0.1', port=3306,
+                        user='root', password='root',
+                        database='school', charset='utf8mb4')
+    cursor = conn.cursor()
+    # res = cursor.execute("GRANT SELECT ON %s.* TO %s@%s;",params)
+    sql = f"GRANT SELECT ON {params[0]}.* TO '{params[1]}'@'{params[2]}';"
+    # print(sql)
+    res = cursor.execute(sql)
+    print(res)
+    # 刷新权限使其生效
+    cursor.execute("FLUSH PRIVILEGES;")
+    conn.commit()  
+    conn.close 
+
 if __name__ == '__main__':
     # load_stu()    
     # load_teacher()
@@ -199,4 +262,10 @@ if __name__ == '__main__':
     # doUpdateJob(conn,"update tb_student set age=%s where stu_id=%s",(3923,20))
     # test_doupdate()
     # update_stu()
-    del_record(conn,"delete from tb_student where stu_id=%s;",'tb_student',(2035,))
+    # del_record(conn,"delete from tb_student where stu_id=%s;",'tb_student',(2035,))
+    # del_user(conn,('wangdachui','%'))
+    # del_user(conn,('wangdachui','192.168.0.%'))
+    # get_all_user(conn)
+    #  add_user(conn,('wangdachui','%','Wang.618'))
+    # grant_privileges(conn,('wangdachui','%'))
+    grant_privileges2(conn,('school','wangdachui','%'))
