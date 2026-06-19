@@ -124,11 +124,66 @@ def query_data(querysql,params=None):
                         user='root', password='root',
                         database='school', charset='utf8mb4')
     cursor = conn.cursor()
-    cursor.execute(querysql)  
+    cursor.execute(querysql,params)  
     rows = cursor.fetchall()
     for row in rows:
         print(row)  
     conn.close   
+
+def add_col(sql):
+    global conn
+    if conn == None:
+        conn = pymysql.connect(host='127.0.0.1', port=3306,
+                        user='root', password='root',
+                        database='school', charset='utf8mb4')  
+    cursor = conn.cursor()
+    row = cursor.execute(sql) 
+    if row > 0:
+        print("success...")     
+    conn.commit()    
+    conn.close() 
+
+def doUpdateJob(conn,sql,tb,params=None):
+    if conn == None:
+        conn = pymysql.connect(host='127.0.0.1', port=3306,
+                        user='root', password='root',
+                        database='school', charset='utf8mb4')
+    cursor = conn.cursor()
+    rows = cursor.execute(sql,params)  
+    if rows>=1:
+        print(f"table {tb} updated ")
+    conn.commit()  
+    conn.close  
+
+
+def test_doupdate():
+    conn = pymysql.connect(host='127.0.0.1', port=3306,
+                        user='root', password='root',
+                        database='school', charset='utf8mb4')
+    #  cur = conn.cursor()
+    #  cur.execute("update tb_student set age=%s where stu_id=%s;",(23,1002))
+    #  conn.commit()
+    #  conn.close()
+    doUpdateJob(conn,"update tb_student set age=%s where stu_id=%s;",'tb_student',(25,1033))
+
+def update_stu():
+    sql = "update tb_student set age=%s where stu_id=%s;"
+    params = (22,3923)
+    doUpdateJob(conn,sql,'tb_student',(params[0],params[1])) # 两个占位符的传递值方法
+
+def del_record(conn,delsql,tb,params=None):
+    if conn == None:
+        conn = pymysql.connect(host='127.0.0.1', port=3306,
+                        user='root', password='root',
+                        database='school', charset='utf8mb4')
+    cursor = conn.cursor()
+    cursor.execute("SET FOREIGN_KEY_CHECKS = 0;") #关闭外键检查，可能有些表不能这么做
+    row = cursor.execute(delsql,params)
+    if row > 0:
+        print(f"Deleted Record From {tb}")
+    conn.commit()  
+    cursor.execute("SET FOREIGN_KEY_CHECKS = 1;") #打开外键检查
+    conn.close  
 
 if __name__ == '__main__':
     # load_stu()    
@@ -136,4 +191,12 @@ if __name__ == '__main__':
     # load_course()
     # load_record()
     # load_college()
-    query_data("select * from tb_student")
+    # query_data("select * from tb_student")
+    # query_data("select * from tb_student where col_id=%s",(3,))
+    # query_data("select * from tb_student where col_id<>%s",(3,))
+    # query_data("select * from tb_course where cou_name like '%计算机%'")
+    # add_col("alter table tb_student add column `age` int not null comment '年龄'")
+    # doUpdateJob(conn,"update tb_student set age=%s where stu_id=%s",(3923,20))
+    # test_doupdate()
+    # update_stu()
+    del_record(conn,"delete from tb_student where stu_id=%s;",'tb_student',(2035,))
