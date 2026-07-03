@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Subjects</title>
+</head>
+<body>
+  <h2>Subjects page</h2>
+  <table>
+      <thead>
+      <tr>
+          <th>编号</th>
+          <th>科目名称</th>
+          <th>简介</th>
+          <th>是否热门</th>
+      </tr>
+      </thead>
+      <tbody>
+       {% for s in subjects %}
+         <tr>
+             <td>{{ s.no }}</td>
+             <td><a href="/teachers/query/?sno={{ s.no }}">{{ s.name }}</a></td>
+             <td>{{ s.intro }}</td>
+             <td>
+                 {% if s.is_hot %}
+                   热门
+                 {% else %}
+                   非热门
+                 {% endif %}
+             </td>
+         </tr>
+       {% endfor %}
+      </tbody>
+  </table>
+</body>
+</html>
