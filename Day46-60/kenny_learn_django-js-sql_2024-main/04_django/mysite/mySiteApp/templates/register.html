@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户注册</title>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1/css/bootstrap.css' %}">
+</head>
+<body>
+  <form action="#" method="post">
+  <h1>Sign up</h1>
+  <section>
+    <label>Full name</label>
+    <input name="username" type="text">
+  </section>
+  <section>
+    <label>Password</label>
+    <input type="password" name="pwd">
+  </section>
+  <section>
+    <label>Email</label>
+    <input type="email" name="email">
+  </section>
+
+  <button id="sign-up" class="btn btn-primary">Sign up</button>
+
+</form>
+<script src="{% static 'js/jquery3.7.1.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-3.4.1/js/bootstrap.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  <title>员工管理系统首页</title>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h2>欢迎来到首页,请点击下面的按钮选择你的操作</h2>
+        <ul>
+            <li class="btn btn-default"><a href="/dep/list/">部门列表</a></li>
+            <li class="btn btn-default"><a href="/user/list/">用户列表</a></li>
+        </ul>
+    </div>
+
+{% endblock %}

@@ -57,6 +57,12 @@ redis-server.exe redis.windows.conf
 
   ![{BB16D72F-F84F-4624-A7A4-7C3234A37573}](./安装redis8.26.assets/{BB16D72F-F84F-4624-A7A4-7C3234A37573}.png)
 
+### 常用命令
+
+- 安装服务：myredis.exe install
+
+- **启动服务**：`myredis.exe start`
+
 - **停止服务**：`myredis.exe stop`
 
 - **卸载（删除）服务**：`myredis.exe uninstall`
@@ -75,5 +81,35 @@ redis-server.exe redis.windows.conf
 
 ![{68A18346-5AD1-4E66-93A2-F6F207C56BE4}](./安装redis8.26.assets/{68A18346-5AD1-4E66-93A2-F6F207C56BE4}.png)
 
+## 12.我们发现把一个服务程序放在c盘以外的分区，服务不会自动启动，我们把服务删除，然后把这个redis文件夹移动到c盘
+
+![image-20260707075414960](./安装redis8.26.assets/image-20260707075414960.png)
+
+## 注意：我们需要修改运行myredis.xml,修改后的内容如下
+
+```
+<service>
+    <id>MyCMDService</id>
+    <name>RedisCMD</name>
+    <description>这是一个通过 WinSW 运行的 CMD 脚本服务</description>
+    <!-- 执行文件指向 cmd.exe -->
+    <executable>cmd.exe</executable>
+    <!-- 传入参数，/c 表示运行后关闭窗口，后面跟你的实际脚本路径 -->
+    <arguments>/c "C:\Redis8.2.6\redis-service.cmd"</arguments>
+    <logmode>append</logmode>
+</service>
+```
 
 
+
+## 13.然后我们打开cmd窗口，定位进入这个文件夹，运行：myredis.exe install重新安装服务
+
+![image-20260707075718245](./安装redis8.26.assets/image-20260707075718245.png)
+
+## 14.然后我们需要启动服务： myredis.exe start
+
+![image-20260707075859087](./安装redis8.26.assets/image-20260707075859087.png)
+
+## 注意，当我们启动redis-cli，一定要以管理员身份打开cmd窗口，在运行，否则说redis不能启动
+
+![image-20260707081031236](./安装redis8.26.assets/image-20260707081031236.png)

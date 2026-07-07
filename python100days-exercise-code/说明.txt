@@ -1,2 +1,4 @@
 这个文件夹里面的东西是对我们的100天里面的内容的实践和补充
 由于day47里面有些操作得不到正确的效果，所以我根据以前的课程来补充，也不需要100%按照他的，只需要正常工作就可以了
+
+xxxxxxxxxx <div class="user">    {% if request.session.userid %}    <span>{{ request.session.username }}</span>    <a href="/logout">注销</a>    {% else %}    <a href="/login">登录</a>&nbsp;&nbsp;    {% endif %}    <a href="/register">注册</a></div>

@@ -1,0 +1,306 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    <title>订单管理</title>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div style="margin-bottom: 5px;">
+{#            <input type="button" id="btnAdd" class="btn btn-primary" value="新增订单" data-toggle="modal" data-target="#myModal">#}
+            <input type="button" id="btnAdd" class="btn btn-primary" value="新增订单">
+        </div>
+        <div class="panel panel-default">
+              <!-- Default panel contents -->
+              <div class="panel-heading">
+                  <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                  订单列表
+              </div>
+
+             <table class="table table-bordered table-responsive">
+              <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>订单号</th>
+                  <th>商品名称</th>
+                  <th>价格</th>
+                  <th>状态</th>
+                  <th>管理员</th>
+                  <th>操作</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for o in orders %}
+              <tr uid="{{ o.id }}">
+                  <td>{{ o.id }}</td>
+                  <td>{{ o.oid }}</td>
+                  <td>{{ o.title }}</td>
+                  <td>{{ o.price}}</td>
+                  <td>{{ o.get_status_display}}</td>
+                  <td>{{ o.admin}}</td>
+                  <td>
+{#                      <a href="/dep/edit/?nid={{ dep.id }}" class="btn btn-success btn-xs">编辑</a>#}
+                      {#     使用ajax方式来删除,需要按钮而不是超链接 需要给他添加一个额外的class                #}
+                      <input type="button" e_id="{{ o.id }}" class="btn btn-success btn-xs btn-edit" value="编辑" />
+                      <input type="button" d_id="{{ o.id }}" class="btn btn-danger btn-xs btn-delete" value="删除" />
+                  </td>
+              </tr>
+              {% endfor %}
+              </tbody>
+          </table>
+          </div>
+        {#  分页组件      #}
+        <ul class="pagination">
+              {{ page_str }}
+          </ul>
+    </div>
+    <!-- Modal 新建订单模态对话框我们也可以用它来做编辑对话框-->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">新增订单</h4>
+          </div>
+          <div class="modal-body">
+           {#     显示订单表单  ,使用Ajax请求提交实际,也不需要csrf_token     #}
+              <form id="orderForm">
+                  <div class="clearfix">
+                 {% for item in form %}
+                  <div class="col-xs-6">
+                     <div class="form-group" style="position: relative;margin-bottom: 30px;">
+                       {{ item.label }}
+                       {{ item }}
+                     <span class="error-msg" style="color: red;position: absolute;margin-top: 5px;"></span>
+                     </div>
+                  </div>
+                 {% endfor %}
+                  {#       这里原本有一个按钮用来提交数据,但这里由于使用了模态框,我们就不需要这个按钮,直接使用模态框的按钮来提交           #}
+               </div>
+              </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button id="btnSave" type="button" class="btn btn-primary">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {#  删除数据的模态对话框  #}
+    <!-- Modal -->
+    <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="alert alert-danger alert-dismissible fade in" role="alert">
+          <h4>确认删除订单?</h4>
+          <p style="margin: 10px 0;">订单删除后所有关联的数据都会被删除</p>
+          <p style="text-align: right">
+            <button type="button" id="btnRemove" class="btn btn-danger">确定</button>
+            <button type="button" id="btnCancel" class="btn btn-default" data-dismiss="modal">取消</button>
+          </p>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        //用来保存被删除数据的id的全局变量
+        var del_id;
+         //用来保存被修改数据的id的全局变量
+        var edit_id;
+
+       $(function (){
+           $("#btnAdd").click(function () {
+               $(".error-msg").empty(); //清除上一次的错误信息.
+                //需要将全局变量edit_id置空
+               edit_id = undefined;
+               //因为新建和编辑都用同一个表单,所以在新建的时候应该清空表单数据
+               $("#orderForm")[0].reset() //需要找到表单对应的dom对象然后调用他的reset方法
+               //修改对话框的标题,因为编辑订单也需要使用这个对话框
+                $(".modal-title").text("新建订单")
+               //显示对话框
+               {#$("#myModal").modal("toggle")#}
+               $("#myModal").modal("show")
+
+           })
+           //保存数据
+           $("#btnSave").click(function () {
+            {#alert("点击了保存按钮...")#}
+
+             //根据edit_id是否有值来发送不同的请求
+              if(!edit_id){
+                  //新增订单
+                  doAdd()
+             }else{
+               //编辑功能
+                {#doEdit()#}
+                doEdit2()
+            }
+
+           })
+
+           //把发送新增请求的代码封装到一个doAdd()函数中
+           function doAdd() {
+                $.ajax({
+                  //发送表单数据到后台
+                  url:"/order/add/",
+                  type:"post",
+                  data:$("#orderForm").serialize(),
+                  dataType:"JSON",
+                  success:function (ret) {
+                      console.log(ret)
+                      if(ret.status){
+                          alert("添加订单成功!")
+                          //用js刷新页面,否则新增加的数据不会体现在页面上
+                          //添加数据成功后需要清空表单的内容防止重复添加相同的订单
+                          $("#orderForm")[0].reset() //需要找到表单对应的dom对象然后调用他的reset方法
+                          //关闭对话框
+                          $("#myModal").modal("hide")
+                          location.reload()
+                      } else{
+                          $.each(ret.errors,function (name, data) {
+                              $("#id_"+name).next().text(data[0]) //提交失败显示错误信息
+                          })
+                      }
+                  }
+               })
+           }
+           //把发送编辑请求的代码封装到一个doEdit()函数中
+           function doEdit() {
+               $.ajax({
+                  //发送表单数据到后台
+                  url:"/order/"+edit_id+"/edit/",
+                  type:"post",
+                  data:$("#orderForm").serialize(),
+                  dataType:"JSON",
+                  success:function (ret) {
+                      console.log(ret)
+                      if(ret.status){
+                          alert("修改订单成功!")
+                          //用js刷新页面,否则新增加的数据不会体现在页面上
+                          //添加数据成功后需要清空表单的内容防止重复添加相同的订单
+                          $("#orderForm")[0].reset() //需要找到表单对应的dom对象然后调用他的reset方法
+                          //关闭对话框
+                          $("#myModal").modal("hide")
+                          location.reload()
+                      } else{
+                          $.each(ret.errors,function (name, data) {
+                              $("#id_"+name).next().text(data[0]) //提交失败显示错误信息
+                          })
+                      }
+                  }
+              })
+           }
+           //编辑请求的另外一种写法
+           function doEdit2(){
+                 $.ajax({
+                  //发送表单数据到后台,post方式也可以有查询字符串
+                  url:"/order/edit2/?eId="+edit_id,
+                  type:"post",
+                  data:$("#orderForm").serialize(),
+                  dataType:"JSON",
+                  success:function (ret) {
+                      console.log(ret)
+                      if(ret.status){
+                          alert("修改订单成功!")
+                          //用js刷新页面,否则新增加的数据不会体现在页面上
+                          //添加数据成功后需要清空表单的内容防止重复添加相同的订单
+                          $("#orderForm")[0].reset() //需要找到表单对应的dom对象然后调用他的reset方法
+                          //关闭对话框
+                          $("#myModal").modal("hide")
+                          location.reload()
+                      } else{
+                          if(ret.errorMsg){
+                              alert(ret.errorMsg)
+                          } else {
+                              $.each(ret.errors,function (name, data) {
+                               $("#id_"+name).next().text(data[0]) //提交失败显示错误信息
+                            })
+                          }
+
+                      }
+                  }
+               })
+           }
+           //删除功能,先点击列表上面的删除按钮弹出确认对话框
+           $(".btn-delete").click(function (){
+               $("#delModal").modal("show")
+                //获取需要删除的数据的id,然后赋值给del_id
+               {#del_id = $(".btn-delete").attr("d_id")#}
+               del_id = $(this).attr("d_id")
+           })
+           //这个是对话框的确认按钮,点击后需要发送删除id给后端,然后在后端进行删除
+           $("#btnRemove").click(function () {
+               {#alert("点击了确认按钮")#}
+               //发送Ajax请求把我们上面保存的全局删除id发送给后端
+               $.ajax({
+                   {#url:"/order/"+ del_id +"/del",// /order/8/del的形式也可以,这样子在urls.py中需要order/<int:dis>/del/形式的路由#}
+                   url:"/order/del",// /order/del/?的形式,需要通过data
+                   type:"get",
+                   data:{
+                       did:del_id
+                   },
+                   dataType:"JSON",
+                   success:function (res) {
+                       console.log(res)
+                       //删除成功
+                       if(res.status){
+                            //删除成功,需要把对话框隐藏起来
+                            $("#delModal").modal("hide")
+                            {#//刷新页面,让用户看到效果.#}
+                            location.reload();
+                       } else{
+                           //删除失败
+                           alert(res.errors)
+                           //删除失败,弹出提示框就也需要隐藏对话框
+                           $("#delModal").modal("hide")
+                       }
+                   }
+               })
+           })
+
+           //点击编辑按钮(用.btn-edit来找到这个按钮)需要弹出一个编辑对话框
+           $(".btn-edit").click(function () {
+               {#alert("点击了编辑按钮")#}
+               $(".error-msg").empty(); //清除上一次的错误信息.
+               //获取需要在后台数据库查询的数据的id
+               var currId = $(this).attr("e_id")
+               //把当前行的id赋值给edit_id全局变量,方便上面使用
+               edit_id = currId
+               //发送Ajax请求去后台获取当前行的相关数据
+               $.ajax({
+                   url:"/order/detail",
+                   type:"get",
+                   data:{
+                       eId:currId
+                   },
+                   dataType:"JSON",
+                   success:function (res) {
+                       if(res.status){
+                           //回显数据到表单
+                           {#console.log(res.data.title,res.data.price,res.data.status)#}
+                           //只有查询到数据才显示对话框
+                           //先清空一下旧数据,保证获取到最新数据
+                           $("#orderForm")[0].reset() //需要找到表单对应的dom对象然后调用他的reset方法
+                           //先把数据添加到对话框里面的表单的输入框中
+                           $.each(res.data,function (name,value) {
+                               $("#id_"+name).val(value)
+                           })
+                           //修改标题
+                           $(".modal-title").text("编辑订单")
+                           //弹出编辑对话框,可以复用新建对话框
+                           $("#myModal").modal("show")
+                       } else {
+                           //获取数据失败.
+                           //显示错误提示
+                           alert(res.errors)
+                       }
+                   }
+               })
+
+           })
+
+       })
+    </script>
+{% endblock %}
+

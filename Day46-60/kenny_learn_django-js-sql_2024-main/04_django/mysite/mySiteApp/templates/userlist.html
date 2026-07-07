@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户列表</title>
+    <style>
+
+    </style>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<div class="box">
+    <table>
+    <caption>
+        <h1> 用户列表</h1>
+    </caption>
+    <thead>
+    <tr>
+        <th>用户名</th>
+        <th>性别</th>
+        <th>年龄</th>
+        <th>邮箱</th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>小梅</td>
+        <td>女</td>
+        <td>18</td>
+        <td>xiaomei1234@gmail.com</td>
+    </tr>
+    <tr>
+        <td>小天</td>
+        <td>男</td>
+        <td>18</td>
+        <td>xiaotian555@gmail.com</td>
+    </tr>
+    </tbody>
+
+</table>
+    <img src="{% static 'img/1.jpg' %}" alt="美女图片">
+</div>
+{#<script src="/static/js/utils.js"></script>#}
+<script src="{% static 'js/jquery3.7.1.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-3.4.1/js/bootstrap.js' %}"></script>
+<script src="{% static 'js/utils.js' %}"></script>
+<script>
+
+let max = getMax(1,2,30,4,50)
+{#alert("max=" + max)#}
+</script>
+</body>
+</html>

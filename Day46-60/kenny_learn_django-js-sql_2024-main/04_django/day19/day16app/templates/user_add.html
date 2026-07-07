@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block title %}
+    <title>新增用户</title>
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'plugins/font-awesome4.7.0/css/font-awesome.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-datepicker1.9.0/css/bootstrap-datepicker.css' %}">
+{% endblock %}
+
+
+{% block content %}
+ <div>
+    <div class="container">
+        <div class="panel panel-default">
+          <!-- Default panel contents -->
+          <div class="panel-heading">
+              <h3 class="panel-title">新建用户</h3>
+          </div>
+          <div class="panel-body">
+          {# 表单  #}
+           <form action="/user/add/" method="post" novalidate>
+               {% csrf_token %}
+               {% for item in form %}
+                  <div class="form-group">
+                    {{ item.label }}
+                      {{ item }}
+                      <span style="color: red;"> {{ item.errors.0 }}</span>
+                  </div>
+               {% endfor %}
+
+              <button type="submit" class="btn btn-success">保 存</button>
+        </form>
+
+          </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+ {% block js %}
+     <script src="{% static 'plugins/bootstrap-datepicker1.9.0/js/bootstrap-datepicker.js' %}"></script>
+     <script src="{% static 'plugins/bootstrap-datepicker1.9.0/locales/bootstrap-datepicker.zh-CN.min.js' %}"></script>
+     <script>
+        $(function () {
+            $('#id_create_time').datepicker({
+                format:"yyyy-mm-dd",
+                startDate:0,
+                language:"zh-CN",
+                autoclose:true
+            });
+        })
+    </script>
+ {% endblock %}
+
+
+

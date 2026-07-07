@@ -26,6 +26,29 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# django-redis settings
+CACHES = {
+    'default': {
+        # 指定通过django-redis接入Redis服务
+        'BACKEND': 'django_redis.cache.RedisCache',
+        # Redis服务器的URL
+        'LOCATION': ['redis://127.0.0.1:6379/0', ],
+        # Redis中键的前缀（解决命名冲突）
+        'KEY_PREFIX': 'vote',
+        # 其他的配置选项
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            # 连接池（预置若干备用的Redis连接）参数
+            'CONNECTION_POOL_KWARGS': {
+                # 最大连接数
+                'max_connections': 512,
+            },
+            # 连接Redis的用户口令
+            'PASSWORD': 'foobared',
+        }
+    },
+}
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -36,6 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'polls',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -46,6 +70,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'vote.middlewares.check_login_middleware',
 ]
 
 ROOT_URLCONF = 'vote.urls'

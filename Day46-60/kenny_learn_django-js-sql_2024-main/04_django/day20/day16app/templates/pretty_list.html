@@ -1,0 +1,72 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+<title>靓号列表</title>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+        <div style="margin-bottom: 5px;" class="clearfix">
+              <a href="/pretty/add/" class="btn btn-primary">
+                  <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                  新增靓号
+              </a>
+            <div style="float: right;width:300px;">
+                <form method="get">
+                    <div class="input-group">
+                      <input type="text" name="kw" class="form-control" placeholder="Search for..." value="{{ kw }}">
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        </button>
+                      </span>
+                    </div>
+                </form>
+            </div>
+          </div>
+        <div class="panel panel-default">
+              <!-- Default panel contents -->
+              <div class="panel-heading">
+                  <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                  靓号列表
+              </div>
+
+             <table class="table table-bordered table-responsive">
+              <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>手机号</th>
+                  <th>价格</th>
+                  <th>级别</th>
+                  <th>状态</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for pr in pretties %}
+              <tr>
+                  <td>{{ pr.id }}</td>
+                  <td>{{ pr.mobile }}</td>
+                  <td>{{pr.price}}</td>
+                  <td>{{ pr.get_level_display }}</td>
+                  <td>{{ pr.get_status_display }}</td>
+                  <td>
+{#                      <a href="/dep/edit/?nid={{ dep.id }}" class="btn btn-success btn-xs">编辑</a>#}
+                      <a href="/pretty/{{ pr.id }}/edit/" class="btn btn-success btn-xs">编辑</a>
+                      <a href="/pretty/{{ pr.id}}/del/" class="btn btn-danger btn-xs">删除</a>
+                  </td>
+              </tr>
+              {% endfor %}
+              </tbody>
+          </table>
+        </div>
+         {#    弹性盒子     #}
+         <div class="clearfix">
+            {#     分页组件        #}
+             <ul class="pagination">
+                    {{page_str}}
+             </ul>
+
+         </div>
+</div>
+{% endblock %}
+

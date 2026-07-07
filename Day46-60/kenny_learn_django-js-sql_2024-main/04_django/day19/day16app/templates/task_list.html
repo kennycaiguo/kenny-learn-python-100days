@@ -1,0 +1,108 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+    <title>Ajax请求学习</title>
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+     <h4>创建任务</h4>
+     {# 任务表单 #}
+     <div class="panel panel-default">
+         <div class="panel-heading">任务表单</div>
+         <div class="panel-body">
+             <form id="taskForm"> {#这里使用ajax提交form里面需要一个id属性#}
+{#               {% csrf_token %}#} {#这里使用ajax提交form里面不需要token#}
+               <div class="clearfix">
+                 {% for item in form %}
+                  <div class="col-xs-6">
+                     <div class="form-group" style="position: relative;margin-bottom: 30px;">
+                       {{ item.label }}
+                       {{ item }}
+                     <span class="error-msg" style="color: red;position: absolute;margin-top: 5px;"></span>
+                     </div>
+                  </div>
+                 {% endfor %}
+                  <div class="col-xs-12">
+                    <button type="button" id="btn" class="btn btn-success">保存任务</button> {#这里不是submit因为我们用ajax提交#}
+                  </div>
+               </div>
+            </form>
+         </div>
+     </div>
+  </div>
+    <hr>
+   {# 任务列表   #}
+  <div class="container">
+    <div class="panel panel-default">
+              <!-- Default panel contents -->
+              <div class="panel-heading">
+                  <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                  任务列表
+              </div>
+
+             <table class="table table-bordered table-responsive">
+              <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>级别</th>
+                  <th>标题</th>
+                  <th>负责人</th>
+                  <th>操作</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for t in tasks %}
+              <tr>
+                  <td>{{ t.id }}</td>
+                  <td>{{ t.get_level_display }}</td>
+                  <td>{{ t.title }}</td>
+                  <td>{{ t.user }}</td>
+                  <td>
+{#                      <a href="/dep/edit/?nid={{ dep.id }}" class="btn btn-success btn-xs">编辑</a>#}
+                      <a href="#" class="btn btn-success btn-xs">编辑</a>
+                      <a href="#" class="btn btn-danger btn-xs">删除</a>
+                  </td>
+              </tr>
+              {% endfor %}
+              </tbody>
+          </table>
+          </div>
+        {#  分页组件      #}
+        <ul class="pagination">
+              {{ page_str }}
+          </ul>
+  </div>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+      $(function () {
+          $("#btn").click(function () {
+              //先把上一次保存的错误信息清空,因为class名字使用显示错误的span的class都一样.
+              $(".error-msg").empty();
+              $.ajax({
+                  url:"/task/add/",
+                  type:"post",
+                  data:$("#taskForm").serialize(),
+                  dataType:"JSON",
+                  success:function (ret) {
+                      {#console.log(ret)#}
+                      if(ret.status){
+                          alert("添加任务成功!")
+                          //用js刷新页面,否则新增加的数据不会体现在页面上
+                          location.reload()
+                      } else{
+                          $.each(ret.errors,function (name, data) {
+                              $("#id_"+name).next().text(data[0])
+
+                          })
+                      }
+                  }
+              })
+          })
+      })
+    </script>
+{% endblock %}

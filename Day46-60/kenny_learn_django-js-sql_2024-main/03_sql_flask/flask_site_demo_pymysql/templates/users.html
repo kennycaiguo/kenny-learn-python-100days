@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户列表</title>
+{#    <style>#}
+{#        table{#}
+{#            width: 60%;#}
+{#            border-collapse: collapse;#}
+{#            margin: 80px auto;#}
+{#        }#}
+{#        th,td{#}
+{#            border: 1px solid #ccc;#}
+{#            padding: 5px 8px;#}
+{#        }#}
+{#    </style>#}
+    <link rel="stylesheet" href="/static/plugins/bootstrap-3.4.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <table class="table table-bordered">
+        <caption><h2>用户列表</h2></caption>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Password</th>
+                <th>Phone</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+            <tr>
+               <td>{{ user.id }}</td>
+               <td>{{ user.username }}</td>
+               <td>{{ user.password }}</td>
+               <td>{{ user.mobile }}</td>
+            </tr>
+         {% endfor %}
+
+        </tbody>
+
+    </table>
+</div>
+<script src="/static/js/jquery3.7.1.min.js"></script>
+<script src="/static/plugins/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>

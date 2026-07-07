@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+<title>用户列表</title>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+<div style="margin-bottom: 5px;">
+              <a href="/user/add/" class="btn btn-primary">
+                  <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                  新增用户
+              </a>
+          </div>
+<div class="panel panel-default">
+              <!-- Default panel contents -->
+              <div class="panel-heading">
+                  <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                  用户列表
+              </div>
+
+             <table class="table table-bordered table-responsive">
+              <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>姓名</th>
+                  <th>密码</th>
+                  <th>年龄</th>
+                  <th>余额</th>
+                  <th>入职时间</th>
+                  <th>性别</th>
+                  <th>所属部门</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for user in users %}
+              <tr>
+                  <td>{{ user.id }}</td>
+                  <td>{{ user.name }}</td>
+                  <td>{{ user.password }}</td>
+                  <td>{{ user.age }}</td>
+                  <td>{{ user.account }}</td>
+                  <td>{{ user.create_time|date:"Y-m-d" }}</td>  {# django中把日期转化为字符串的模板语法  这里只需要年月日,把H:i:s去掉#}
+                  <td>{{ user.get_gender_display }}</td>  {# django提供的针对属性为数字特殊语法 get_xxx_display #}
+                  <td>{{ user.dep.title }}</td>     {# django提供的针对外键为数字特殊语法 obj.xxx.xxx xxx就是xxx_id去掉_id #}
+                  <td>
+{#                      <a href="/dep/edit/?nid={{ dep.id }}" class="btn btn-success btn-xs">编辑</a>#}
+                      <a href="/user/{{ user.id }}/edit/" class="btn btn-success btn-xs">编辑</a>
+                      <a href="/user/{{user.id}}/del/" class="btn btn-danger btn-xs">删除</a>
+                  </td>
+              </tr>
+              {% endfor %}
+              </tbody>
+          </table>
+          </div>
+          <ul class="pagination">
+              {{ page_str }}
+          </ul>
+</div>
+{% endblock %}
+

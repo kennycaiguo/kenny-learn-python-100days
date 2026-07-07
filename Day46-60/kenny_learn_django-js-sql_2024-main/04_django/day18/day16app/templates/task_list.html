@@ -1,0 +1,62 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+    <title>Ajax请求学习</title>
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+     <h1>ajax任务</h1>
+     <div class="panel panel-default">
+         <div class="panel-heading">任务表单</div>
+         <div class="panel-body">
+             <form id="taskForm"> {#这里使用ajax提交form里面需要一个id属性#}
+{#               {% csrf_token %}#} {#这里使用ajax提交form里面不需要token#}
+               <div class="clearfix">
+                 {% for item in form %}
+                  <div class="col-xs-6">
+                     <div class="form-group" style="position: relative;margin-bottom: 30px;">
+                       {{ item.label }}
+                       {{ item }}
+                     <span class="error-msg" style="color: red;position: absolute;margin-top: 5px;"></span>
+                     </div>
+                  </div>
+                 {% endfor %}
+                  <div class="col-xs-12">
+                    <button type="button" id="btn" class="btn btn-success">保存任务</button> {#这里不是submit因为我们用ajax提交#}
+                  </div>
+               </div>
+            </form>
+         </div>
+     </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+      $(function () {
+          $("#btn").click(function () {
+              //先把上一次保存的错误信息清空,因为class名字使用显示错误的span的class都一样.
+              $(".error-msg").empty();
+              $.ajax({
+                  url:"/task/add/",
+                  type:"post",
+                  data:$("#taskForm").serialize(),
+                  dataType:"JSON",
+                  success:function (ret) {
+                      {#console.log(ret)#}
+                      if(ret.status){
+                          alert("添加任务成功!")
+                      } else{
+                          $.each(ret.errors,function (name, data) {
+                              $("#id_"+name).next().text(data[0])
+
+                          })
+                      }
+                  }
+              })
+          })
+      })
+    </script>
+{% endblock %}
