@@ -56,12 +56,12 @@ class Captcha:
         self._image = None
         self._fonts = fonts if fonts else \
             [os.path.join(os.path.dirname(__file__), 'fonts', font)
-             for font in ['arial.ttf', 'georgia.ttf', 'constan.ttf']]
+             for font in ['constan.ttf','arialbd.ttf', 'georgia.ttf']]
         self._color = color if color else random_color(0, 200, random.randint(220, 255))
         self._width, self._height = width, height
 
     @classmethod
-    def instance(cls, width=200, height=75):
+    def instance(cls, width=250, height=95):
         """用于获取Captcha对象的类方法"""
         prop_name = f'_instance_{width}_{height}'
         if not hasattr(cls, prop_name):
@@ -180,8 +180,10 @@ class Captcha:
         """
         self._image = Image.new('RGB', (self._width, self._height), (255, 255, 255))
         self._background()
+        # self._text(captcha_text, self._fonts,
+        #            drawings=['_warp', '_rotate', '_offset'])
         self._text(captcha_text, self._fonts,
-                   drawings=['_warp', '_rotate', '_offset'])
+                   drawings=['_offset'])
         self._curve()
         self._noise()
         self._smooth()

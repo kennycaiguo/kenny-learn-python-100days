@@ -149,7 +149,7 @@ def good_or_bad(request):
         try:
             tno = int(request.GET.get('tno'))
             teacher = Teacher.objects.get(no=tno)
-            if request.path.starswith('/praise'):
+            if request.path.startswith('/praise'):
                 teacher.gcount += 1
                 count = teacher.gcount
             else:
@@ -159,7 +159,7 @@ def good_or_bad(request):
             data = {
                 "code": 20000, "msg": "投票成功", "count": count
             }
-        except (ValueError, Teacher.DoseNotExist):
+        except (ValueError, Teacher.DoesNotExist):
             data = {
                 "code": 20002, "msg": "投票失败"
             }
@@ -177,6 +177,8 @@ def login(request):  # 为了方便学习，我们所有用户的密码都设置
     # post 请求
     username = request.POST.get("username")
     password = request.POST.get("password")
+    captcha = request.POST.get('captcha')
+    print(captcha, captcha == request.session.get('captcha'))
     if username and password:
         password = gen_hash_digest(password)
         user = User.objects.filter(username=username, password=password).first()
