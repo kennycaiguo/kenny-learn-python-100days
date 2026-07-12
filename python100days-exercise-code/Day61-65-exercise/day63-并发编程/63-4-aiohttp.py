@@ -42,7 +42,8 @@ def main():
     loop.run_until_complete(future)
     loop.close()
 
-def main2():
+
+async def main2():
     urls = [
         'https://www.python.org/',
         'https://www.jd.com/',
@@ -55,11 +56,11 @@ def main2():
         'https://www.usa.gov/',
         'https://www.nasa.gov/'
     ]
-    objs = [fetch_page_title(url) for url in urls]
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(asyncio.wait(objs))
-    loop.close()    
+    tasks = [asyncio.create_task(fetch_page_title(url)) for url in urls]
+    await asyncio.wait(tasks)
+   
 
 if __name__ == '__main__':
     main()
-    # main2() # 有问题
+    # asyncio.run(main2()) # 
+    
