@@ -1,0 +1,1 @@
+需要进入每一个文件夹，然后运行python setup.py install 来安装，不能直接使用pip install 安装
