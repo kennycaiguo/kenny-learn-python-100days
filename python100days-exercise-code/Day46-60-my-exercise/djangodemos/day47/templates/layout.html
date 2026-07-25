@@ -1,17 +1,21 @@
 {% load static %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>编辑部门</title>
-     <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1/css/bootstrap.min.css' %}">
+    {% block title %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1/css/bootstrap.min.css' %}">
     <style>
+        .table {
+            width: 100%;
+        }
         .navbar{
             border-radius: 0;
         }
     </style>
 </head>
 <body>
+{#导航条#}
 <nav class="navbar navbar-default">
   <div class="container">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -46,35 +50,15 @@
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
+{#主体内容#}
 <div>
     <div class="container">
-        <div class="panel panel-default">
-          <!-- Default panel contents -->
-          <div class="panel-heading">
-              <h3 class="panel-title">编辑部门</h3>
-          </div>
-          <div class="panel-body">
-          {# 表单  #}
-           <form action="/dep/edit/" method="post">
-               {% csrf_token %}
-              <div class="form-group">
-                <label>部门名称</label>
-                <div>
-                  <input type="hidden" class="form-control" name="id"value="{{ dep.id }}">
-                  <input type="text" class="form-control" name="title"value="{{ dep.title }}">
-                </div>
-              </div>
-              <button type="submit" class="btn btn-success">更 新</button>
-        </form>
-          </div>
-        </div>
-
+        {% block content %} {% endblock %}
     </div>
+    
 </div>
+<script src="{% static 'js/jquery3.7.1.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-3.4.1/js/bootstrap.min.js' %}"></script>
 
-
-  <script src="{% static 'js/jquery3.7.1.min.js' %}"></script>
-  <script src="{% static 'plugins/bootstrap-3.4.1/js/bootstrap.min.js' %}"></script>
 </body>
 </html>
-

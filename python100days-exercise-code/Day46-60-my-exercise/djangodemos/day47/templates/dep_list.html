@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block title %}
+    <title>部门列表</title>
+{% endblock title %}
+    
+{% block content %}
+   <div class="container">
+    <div style="margin-bottom: 5px;">
+        <a href="/dep/add/" class="btn btn-primary">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            新增部门
+        </a>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+            部门列表
+        </div>
+       <table class="table table-bordered table-responsive">
+            <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>部门名称</th>
+                  <th>操作</th>
+              </tr>
+              </thead>
+            <tbody>
+            {% for dep in deps %}
+
+                <tr>
+                <td>{{dep.id}}</td>
+                <td>{{dep.title}}</td>
+                <td>
+                    {% comment %} <a class="btn btn-success btn-xs" href="/dep/edit/?nid={{ dep.id }}">编辑</a> {% endcomment %}
+                    <a class="btn btn-success btn-xs" href="/dep/{{dep.id}}/edit/">编辑</a>
+                    <a class="btn btn-danger btn-xs" href="/dep/del/?nid={{ dep.id }}">删除</a>
+                </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+       </table>
+    </div>
+</div>
+{% endblock content %}

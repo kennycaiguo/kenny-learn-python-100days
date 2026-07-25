@@ -25,10 +25,11 @@ def index(request):
     return render(request, 'index.html')
 urlpatterns = [
     #    path('admin/', admin.site.urls),
-    path('',index,name='index'),
+    path('',dep_view.home,name='index'),
     path("dep/",dep_view.dep_home,name="dep_home"),
     path("dep/list/",dep_view.dep_list,name="dep_list"),
     path('dep/add/',dep_view.dep_add,name="dep_add"),
     path('dep/del/',dep_view.dep_del,name="dep_del"),
-    path('dep/edit/',dep_view.dep_edit,name="dep_edit"),
+    # path('dep/edit/',dep_view.dep_edit,name="dep_edit"),
+    path('dep/<int:nid>/edit/',dep_view.dep_edit,name="dep_edit")
 ]

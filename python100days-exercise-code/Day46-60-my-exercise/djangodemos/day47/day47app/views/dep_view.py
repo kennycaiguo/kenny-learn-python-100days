@@ -25,11 +25,23 @@ def dep_del(request):
     Department.objects.filter(id=nid).delete()
     return redirect("/dep/list")
 
+# 匹配dep/edit/?nid=xx
+# def dep_edit(request):
+#     # 处理get请求
+#     if request.method == "GET":
+#         nid = request.GET.get("nid")
+#         dep = Department.objects.get(id=nid)
+#         return render(request,"dep_edit.html",{"dep":dep})
+#     # 处理post请求
+#     id = int(request.POST.get("id"))
+#     title = request.POST.get("title")
+#     Department.objects.filter(id=id).update(title=title)
+#     return redirect("/dep/list")
 
-def dep_edit(request):
+# 配置dep/1/edit/
+def dep_edit(request,nid):
     # 处理get请求
     if request.method == "GET":
-        nid = request.GET.get("nid")
         dep = Department.objects.get(id=nid)
         return render(request,"dep_edit.html",{"dep":dep})
     # 处理post请求
@@ -37,3 +49,6 @@ def dep_edit(request):
     title = request.POST.get("title")
     Department.objects.filter(id=id).update(title=title)
     return redirect("/dep/list")
+
+def home(req):
+    return render(req,'home.html')
