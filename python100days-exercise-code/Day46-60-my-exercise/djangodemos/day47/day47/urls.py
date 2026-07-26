@@ -19,17 +19,20 @@ from django.urls import path
 from django.shortcuts import render
 
 
-from day47app.views import dep_view
+from day47app.views import dep_view,user_view
 
 def index(request):
     return render(request, 'index.html')
 urlpatterns = [
     #    path('admin/', admin.site.urls),
     path('',dep_view.home,name='index'),
+    # department urls
     path("dep/",dep_view.dep_home,name="dep_home"),
     path("dep/list/",dep_view.dep_list,name="dep_list"),
     path('dep/add/',dep_view.dep_add,name="dep_add"),
     path('dep/del/',dep_view.dep_del,name="dep_del"),
     # path('dep/edit/',dep_view.dep_edit,name="dep_edit"),
-    path('dep/<int:nid>/edit/',dep_view.dep_edit,name="dep_edit")
+    path('dep/<int:nid>/edit/',dep_view.dep_edit,name="dep_edit"),
+    # users urls
+    path('user/list',user_view.user_list,name="user_list")
 ]

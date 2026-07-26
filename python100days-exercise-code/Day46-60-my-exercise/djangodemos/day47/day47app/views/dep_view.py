@@ -16,7 +16,7 @@ def dep_add(request):
         return render(request,'dep_add.html')
     title = request.POST.get("title")
     Department.objects.create(title=title)
-    return HttpResponse("添加数据成功")
+    return redirect("/dep/list")
 
 
 def dep_del(request):
