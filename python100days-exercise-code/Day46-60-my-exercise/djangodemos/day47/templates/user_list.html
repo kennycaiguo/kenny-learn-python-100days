@@ -5,7 +5,50 @@
 
 {% block content %}
   <div class="container">
-   
+   <div style="margin-bottom: 5px">
+       <a href="/user/add/" class="btn btn-primary">
+        <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+        新增用户
+       </a>
+   </div>
+   <div class="panel panel-default">
+    <div class="panel-heading">
+      <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+      用户列表
+    </div>
+    <table class="table table-bordered table-responsive">
+      <thead>
+       <tr>
+         <th>ID</th>
+         <th>姓名</th>
+         <th>密码</th>
+         <th>年龄</th>
+         <th>余额</th>
+         <th>入职时间</th>
+         <th>性别</th>
+         <th>所属部门</th>
+       </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+          <tr>
+            <td>{{user.id}}</td>
+            <td>{{user.name}}</td>
+            <td>{{user.password}}</td>
+            <td>{{user.age}}</td>
+            <td>{{user.account}}</td>
+            <td>{{user.create_time|date:"Y-m-d H:i:s"}}</td>
+            <td>{{user.get_gender_display}}</td>
+            <td>{{user.dep.title}}</td>
+            <td>
+              <a href="user/{{user.id}}/edit/" class="btn btn-success btn-xs">编辑</a>
+              <a href="user/del/?nid={{user.id}}" class="btn btn-danger btn-xs">删除</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+   </div>
   </div>
 {% endblock content %}
 
