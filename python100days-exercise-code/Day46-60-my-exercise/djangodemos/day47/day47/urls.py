@@ -34,5 +34,8 @@ urlpatterns = [
     # path('dep/edit/',dep_view.dep_edit,name="dep_edit"),
     path('dep/<int:nid>/edit/',dep_view.dep_edit,name="dep_edit"),
     # users urls
-    path('user/list/',user_view.user_list,name="user_list")
+    path('user/list/',user_view.user_list,name="user_list"),
+    path('user/add/',user_view.user_add,name='user_add'),
+    
+
 ]
