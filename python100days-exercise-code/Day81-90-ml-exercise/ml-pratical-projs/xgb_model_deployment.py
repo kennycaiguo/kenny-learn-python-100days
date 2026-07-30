@@ -1,3 +1,4 @@
+from flask import Flask,jsonify,request
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 import joblib
@@ -31,4 +32,16 @@ test.drop(columns=['Name', 'Ticket', 'SibSp', 'Parch'], inplace=True)
 
 passenger_id, xtest = test.index, xgb.DMatrix(test)
 
-print(xgbmodel.predict(xtest))
+# print(xgbmodel.predict(xtest))
+
+# web服务
+app = Flask(__name__)
+
+@app.route("/predict",methods=['POST'])
+def predict():
+    query_df = pd.DataFrame(request.json)
+    #使用我们上面加载的模型
+    ypred = (xgbmodel.predict(xgb.DMatrix(query_df))>0.5).tolist()
+    return jsonify({'message': 'OK', 'result': ypred})
+
+app.run(debug=True)
