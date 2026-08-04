@@ -37,12 +37,12 @@
             <td>{{user.password}}</td>
             <td>{{user.age}}</td>
             <td>{{user.account}}</td>
-            <td>{{user.create_time|date:"Y-m-d H:i:s"}}</td>
+            <td>{{user.create_time|date:"Y-m-d"}}</td>
             <td>{{user.get_gender_display}}</td>
             <td>{{user.dep.title}}</td>
             <td>
-              <a href="user/{{user.id}}/edit/" class="btn btn-success btn-xs">编辑</a>
-              <a href="user/del/?nid={{user.id}}" class="btn btn-danger btn-xs">删除</a>
+              <a href="/user/{{user.id}}/edit/" class="btn btn-success btn-xs">编辑</a>
+              <a href="/user/del/?nid={{user.id}}" class="btn btn-danger btn-xs">删除</a>
             </td>
           </tr>
         {% endfor %}

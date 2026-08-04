@@ -7,13 +7,15 @@
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 import openpyxl
-from demo.items import MovieItem
+from db_mv_crawler.items import MovieItem
 
-class DemoPipeline:
+
+class DbMvCrawlerPipeline:
     def process_item(self, item):
         return item
-    
-class MovieItemPipeline:
+
+
+class MovieItemPineline:
     def __init__(self):
         self.wb = openpyxl.Workbook()
         self.sheet = self.wb.active
@@ -21,8 +23,8 @@ class MovieItemPipeline:
         self.sheet.append(('详情路径','名称', '评分', '名言'))
 
     def process_item(self, item:MovieItem,spider):
-        self.sheet.append((item["link"],item['title'],item['rating'],item['subject']))
-        return item   
-    
+            self.sheet.append((item["link"],item['title'],item['rating'],item['subject']))
+            return item
+
     def close_spider(self,spider):
-        self.wb.save("豆瓣电影top250.xlsx")
+         self.wb.save("豆瓣电影top250.xlsx")
