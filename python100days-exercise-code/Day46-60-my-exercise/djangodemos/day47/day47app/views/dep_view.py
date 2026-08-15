@@ -2,13 +2,21 @@ from django.http import HttpResponse
 from django.shortcuts import render,redirect
 
 from day47app.models import Department
+from day47app.utils.pagination import Pagination
 
 
 def dep_home(request):
     return redirect("list/")
+
 def dep_list(request):
     deps = Department.objects.all()
-    return render(request,"dep_list.html",{"deps":deps})
+    # 1.常见分页对象
+    pageobj = Pagination(request,deps,page_size=3)
+    # 2.获取分页数据
+    page_qr_set = pageobj.page_queryset
+    # 3.获取分页后生成的html代码
+    page_str = pageobj.gen_html()
+    return render(request,"dep_list.html",{"deps":page_qr_set,"page_str":page_str})
 
 
 def dep_add(request):

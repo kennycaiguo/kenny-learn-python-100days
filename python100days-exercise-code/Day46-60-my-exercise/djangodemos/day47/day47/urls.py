@@ -19,7 +19,7 @@ from django.urls import path
 from django.shortcuts import render
 
 
-from day47app.views import dep_view, pretty_view,user_view
+from day47app.views import dep_view, pretty_view,user_view,admin_view
 
 def index(request):
     return render(request, 'index.html')
@@ -40,5 +40,12 @@ urlpatterns = [
     path('user/del/',user_view.user_del,name='user_del'),
     # pretty number route
     path('pretty/list/',pretty_view.pretty_list,name='pretty_list'),
-    path('pretty/add/',pretty_view.pretty_add,name='pretty_add')
+    path('pretty/add/',pretty_view.pretty_add,name='pretty_add'),
+    path('pretty/<int:nid>/edit/',pretty_view.pretty_edit,name='pretty_edit'),
+    path('pretty/<int:nid>/del/',pretty_view.pretty_del,name='pretty_del'),
+    # admin routes
+    path("admin/list/",admin_view.admin_list,name='admin_list'),
+    path("admin/add/",admin_view.admin_add,name="admin_add"),
+    path("admin/<int:nid>/edit/",admin_view.admin_edit,name="admin_edit"),
+    path("admin/<int:nid>/del/",admin_view.admin_del,name="admin_del"),
 ]

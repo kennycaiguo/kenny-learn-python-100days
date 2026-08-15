@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  <title>新增靓号</title>
+  <title>{{title}}</title>
 {% endblock title %}
 
 {% block content %}
@@ -9,10 +9,11 @@
     <div class="container">
         <div class="panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">新建靓号</h3>
+                <h3 class="panel-title">{{title}}</h3>
             </div>
             <div class="panel-body">
-                <form action="/pretty/add/" method='post' novalidate>
+                {% comment %} 这个模板给两个路由函数使用，不需要些action，它会提交给自己 {% endcomment %}
+                <form  method='post' novalidate>
                   {% csrf_token %}
                   {% for field in form  %}
                      <div>

@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %}
+   <title>编辑靓号</title>
+{% endblock title %}
+
+{% block content %}
+  <div>
+    <div class="container">
+        <div class="panel-default">
+            <div class="panel-heading">
+                 <h3 class="panel-title">修改靓号</h3>
+            </div>
+            <div class="panel-body">
+                <form method='post' novalidate>
+                    {% csrf_token %}
+                    {% for item in form  %}
+                      <div>
+                       {{item.label}}
+                       {{item}}
+                       <span style="color:red;">{{item.errors.0}}</span><br>
+                      </div>
+                     
+                    {% endfor %}
+                    <button style="margin-top:6px;" type="submit" class='btn btn-success'>保存</button>
+                </form>
+            </div>
+        </div>
+    </div>
+  </div>
+{% endblock content %}

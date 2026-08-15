@@ -1,18 +1,25 @@
 from ast import If
 
 from django import forms
-from shiboken6 import isValid
+
 
 
 from day47app.models import UserInfo,Department
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 
+from day47app.utils.pagination import Pagination
 
 def user_list(req):
     users = UserInfo.objects.all()
-    
-    return render(req,'user_list.html',{'users':users})
+    # 分页
+    # 1.实例化分页类的对象
+    page_obj = Pagination(req,users,page_size=3)
+    # 2.获取分页数据
+    page_queryset = page_obj.page_queryset
+    # 3.获取分页器的html字符串
+    page_str = page_obj.gen_html()
+    return render(req,'user_list.html',{'users':page_queryset,"page_str":page_str})
 
 
 class MyForm(forms.ModelForm):
