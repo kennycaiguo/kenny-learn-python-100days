@@ -8,6 +8,7 @@ from day47app.models import UserInfo,Department
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 
+from day47app.utils.day47forms import UserInfoForm
 from day47app.utils.pagination import Pagination
 
 def user_list(req):
@@ -21,25 +22,12 @@ def user_list(req):
     page_str = page_obj.gen_html()
     return render(req,'user_list.html',{'users':page_queryset,"page_str":page_str})
 
-
-class MyForm(forms.ModelForm):
-    name = forms.CharField(min_length=3,label='姓名')
-    class Meta:
-        model = UserInfo
-        fields = ['name','password','age','account','create_time','gender','dep']
-    def __init__(self,*args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for name, field in self.fields.items():
-            field.widget.attrs={"class":"form-control","placeholder":field.label}
-
-       
-
 def user_add(req):
     if req.method == 'GET':
-        form = MyForm()
+        form = UserInfoForm()
         return render(req,'user_add.html',{'form':form})
     # method post
-    form = MyForm(req.POST)
+    form = UserInfoForm(req.POST)
     # VERIFY
     if form.is_valid():
         form.save(commit=True)
@@ -47,14 +35,19 @@ def user_add(req):
     return render(req,'user_add.html',{'form':form})  
 
 def user_edit(req,nid):
+    # 先判断用户传递过来的nid是否有效，如果是无效的，重定向到用户列表
+    row = UserInfo.objects.filter(id=nid)
+    if not row:
+        return redirect("/user/list/")
     # get method handling
     user = UserInfo.objects.filter(id=nid).first()
+    print(user.password)
     if req.method == "GET":
-        form = MyForm(instance=user)
+        form = UserInfoForm(instance=user)
         return render(req,"user_edit.html",{"form":form})
     # post method data handling
     # print(req.POST)
-    form = MyForm(instance=user,data=req.POST)
+    form = UserInfoForm(instance=user,data=req.POST)
     if form.is_valid():
         form.save()
         return redirect("/user/list/")   
@@ -63,5 +56,8 @@ def user_edit(req,nid):
 def user_del(req):
     nid = req.GET.get('nid')
     # print(nid)
-    UserInfo.objects.filter(id=nid).delete()
+    user = UserInfo.objects.filter(id=nid)
+    if not user:
+        return redirect("/user/list") # 如果id无效，我们就转到用户列表
+    user.delete()
     return redirect('/user/list/')

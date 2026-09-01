@@ -65,6 +65,10 @@ def pretty_add(req):
     return  render(req,"pretty_add_edit.html",{"form":form,"title":title})
 
 def pretty_edit(req,nid):
+    # 处理id无效的情况
+    row = PrettyNumber.objects.filter(id=nid)
+    if not row:
+        return redirect("/pretty/list/")
     title = "编辑靓号"
     num = PrettyNumber.objects.filter(id=nid).first()
     print(num)

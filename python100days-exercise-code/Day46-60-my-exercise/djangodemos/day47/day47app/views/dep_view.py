@@ -48,6 +48,9 @@ def dep_del(request):
 
 # 配置dep/1/edit/
 def dep_edit(request,nid):
+    row = Department.objects.filter(id=nid)
+    if not row:
+        return redirect("/dep/list/")
     # 处理get请求
     if request.method == "GET":
         dep = Department.objects.get(id=nid)

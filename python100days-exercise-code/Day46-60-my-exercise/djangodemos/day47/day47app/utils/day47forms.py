@@ -1,3 +1,4 @@
+from django.forms import widgets
 """
 把所有表单相关的类都放在这里,方便views.py的函数调用,而且不会使得views.py过于臃肿
 """
@@ -10,6 +11,7 @@ from day47app.utils.basemodelform import BootstrapModelForm
 from django import forms
 from day47app import models
 from day47app.models import Admin, UserInfo, Department
+from day47app.utils.encrypt import md5
 
 
 # 使用django ModelForm组件的写法
@@ -17,6 +19,8 @@ from day47app.models import Admin, UserInfo, Department
 class UserInfoForm(BootstrapModelForm):
     """添加用户和编辑用户信息需要使用的类"""
     name = forms.CharField(min_length=2, label="姓名")  # 设置姓名的最小长度
+    # 为了不让用户看到密码，我们需要把它密码用"."或者"*"显示
+    password = forms.CharField(label="密码",widget=forms.PasswordInput(render_value=True)) # 注意：render_value=False,密码框就为空
     create_time = forms.CharField(
         min_length=10, label="入职时间",
         widget=forms.TextInput(attrs={"autocomplete": "off"})
@@ -25,6 +29,7 @@ class UserInfoForm(BootstrapModelForm):
     class Meta:
         model = UserInfo
         fields = ['name', "password", "age", "account", "create_time", "gender", "dep"]
+        
 
 
 # 操作PrettyNumber添加数据的ModelForm类
@@ -85,9 +90,18 @@ class PrettyNumberEditForm(BootstrapModelForm):
 
 # 添加管理员表单
 class AdminAddForm(BootstrapModelForm):
+    confirm_pwd = forms.CharField(
+        label="确认密码",
+        widget=forms.PasswordInput
+    )
     class Meta:
         model = Admin
-        fields = "__all__"
+        # fields = "__all__"
+        fields = ["username","password","confirm_pwd"]
+        widgets = {
+            "password":forms.PasswordInput # 有错误不清空文本框的内容，其实清空更好
+        }
+
 
     # 管理员账号不能重复
     def clean_username(self):
@@ -96,9 +110,24 @@ class AdminAddForm(BootstrapModelForm):
         if exist:
             raise ValidationError("管理员用户名不能重复")
         return txt_username
+    
+    # 密码加密钩子函数
+    def clean_password(self):
+        password = self.cleaned_data['password']
+        return md5(password)
+        
+    # 确认密码的钩子
+    def clean_confirm_pwd(self):
+        txt_pwd = self.cleaned_data["password"] # 此时密码已经加密
+        txt_confirm_pwd = md5(self.cleaned_data['confirm_pwd'])
+        if txt_pwd !=txt_confirm_pwd:
+            raise ValidationError("两次输入的密码不一样")
+        return txt_confirm_pwd
+    
+    
 
 
-class AdminEidtForm(BootstrapModelForm):
+class AdminEditForm(BootstrapModelForm):
     class Meta:
         model = Admin
         fields = '__all__'    
@@ -110,3 +139,33 @@ class AdminEidtForm(BootstrapModelForm):
         if exists:
             raise ValidationError("管理员用户名已经存在,请使用不同的用户名")
         return txt_username
+
+class AdminResetForm(BootstrapModelForm):
+    confirm_pwd = forms.CharField(
+        label="确认密码",
+        widget=forms.PasswordInput(render_value=True)
+    )    
+    class Meta:
+        model = Admin
+        fields = ["password", "confirm_pwd"]
+        widgets={
+            "password":forms.PasswordInput(render_value=True)
+        }
+        # 注意django处理字段是按照我们设置的顺序来处理的,所以密码的钩子函数一定要写在确认密码的钩子函数之前,否则会有问题.
+
+    def clean_password(self):
+        password = self.cleaned_data['password']
+        md5_pwd = md5(password) 
+        # 然后去数据库看看当前的密码和新输入的密码是否一致,如果一致就不允许。
+        old_pwd = Admin.objects.filter(id=self.instance.pk).first().password
+        if old_pwd == md5_pwd:
+            raise ValidationError("重置密码不能和用来的密码一样！")
+        return md5_pwd
+
+    # 重置密码的钩子
+    def clean_confirm_pwd(self):
+        password = self.cleaned_data.get('password')
+        confirm_pwd = md5(self.cleaned_data['confirm_pwd'])
+        if password != confirm_pwd:
+            raise ValidationError("两次输入的密码不一样")
+        return confirm_pwd
